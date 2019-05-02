@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.example.teste1.util.DateUtil
 import java.util.*
 
+
 data class Movie(
     val id: Long,
     val name: String,
@@ -29,6 +30,12 @@ data class Movie(
     }
 
     companion object CREATOR : Parcelable.Creator<Movie> {
+
+        const val ID_KEY = "id"
+        const val TITLE_KEY = "title"
+        const val OVERVIEW_KEY = "overview"
+        const val RELEASE_DATE = "release_date"
+
         override fun createFromParcel(parcel: Parcel): Movie {
             return Movie(parcel)
         }
