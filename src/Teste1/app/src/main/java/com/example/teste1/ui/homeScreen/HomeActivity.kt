@@ -8,15 +8,18 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
 import com.example.teste1.R
-import com.example.teste1.model.Movie
+import com.example.teste1.api.RetrofitHandler
 import com.example.teste1.ui.homeScreen.adapter.MoviesAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class HomeActivity : AppCompatActivity() {
 
     private var name: String? = null
     private lateinit var rvList: RecyclerView
     private lateinit var pbProgressBar: ProgressBar
-    private var getMoviesTask: GetMoviesTask? = null
+    private var disposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,26 +38,25 @@ class HomeActivity : AppCompatActivity() {
         rvList.adapter = MoviesAdapter()
     }
 
-
-    private fun implementUpdateHomeActivityContract(): UpdateHomeActivity {
-        return object : UpdateHomeActivity {
-            override fun finishRequest(list: List<Movie>) {
-                (rvList.adapter as? MoviesAdapter)?.changeContent(list)
-                pbProgressBar.visibility = ProgressBar.GONE
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        getMoviesTask = GetMoviesTask(implementUpdateHomeActivityContract())
-        getMoviesTask?.execute()
+
+        disposable = RetrofitHandler.repository.getMovies()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                val result = it?.firstOrNull()?.moviesList ?: emptyList()
+                (rvList.adapter as? MoviesAdapter)?.changeContent(result)
+                pbProgressBar.visibility = ProgressBar.GONE
+            }
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (getMoviesTask?.isCancelled == false) {
-            getMoviesTask?.cancel(true)
+
+        if (disposable?.isDisposed == false) {
+            disposable?.dispose()
         }
     }
 
