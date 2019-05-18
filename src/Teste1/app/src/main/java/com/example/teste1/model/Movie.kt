@@ -3,13 +3,18 @@ package com.example.teste1.model
 import android.os.Parcel
 import android.os.Parcelable
 import com.example.teste1.util.DateUtil
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 
 data class Movie(
+    @SerializedName("id")
     val id: Long,
+    @SerializedName("title")
     val name: String,
+    @SerializedName("overview")
     val overview: String,
+    @SerializedName("release_date")
     val releaseDate: Date
 ) : Parcelable {
     constructor(parcel: Parcel) : this(

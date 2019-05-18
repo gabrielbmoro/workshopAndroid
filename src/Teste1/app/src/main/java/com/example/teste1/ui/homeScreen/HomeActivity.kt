@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ProgressBar
 import com.example.teste1.R
+import com.example.teste1.model.Movie
 import com.example.teste1.ui.homeScreen.adapter.MoviesAdapter
 
 class HomeActivity : AppCompatActivity() {
@@ -37,8 +38,8 @@ class HomeActivity : AppCompatActivity() {
 
     private fun implementUpdateHomeActivityContract(): UpdateHomeActivity {
         return object : UpdateHomeActivity {
-            override fun repositoryIsUpdated() {
-                rvList.adapter?.notifyDataSetChanged()
+            override fun finishRequest(list: List<Movie>) {
+                (rvList.adapter as? MoviesAdapter)?.changeContent(list)
                 pbProgressBar.visibility = ProgressBar.GONE
             }
         }
